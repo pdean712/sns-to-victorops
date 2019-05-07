@@ -1,0 +1,16 @@
+def handler(event, context):
+    gd_json = json.loads(event)
+    gd_raw_message = (gd_json['Message'])
+    gd_message = json.loads(gd_raw_message)
+    severity = (gd_message['detail']['severity'])
+
+if ( severity >= 4 ):
+    gd_message['AlarmName'] = gd_message['detail-type']
+    gd_message['StateChangeTime'] = gd_message['time']
+    gd_message['NewStateValue'] = "ALARM"
+    vo_postdata = json.dumps(gd_message).encode('utf8')
+    url = "http://deanengineering.us/dump2.php" 
+    req = urllib.request.Request(url)
+    req.add_header('Content-Type', 'application/json; charset=utf-8')
+    req.add_header('Content-Length', len(vo_postdata))
+    urllib.request.urlopen(req, vo_postdata) 
